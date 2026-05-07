@@ -2,6 +2,7 @@
   "expo": {
     "name": "target",
     "slug": "target",
+    "scheme": "target",
     "version": "1.0.0",
     "android": {
       "edgeToEdgeEnabled": true,
@@ -14,6 +15,7 @@
     "ios": {
       "bundleIdentifier": "com.antoniosousa.target",
       "icon": "./assets/ios-icon.png"
-    }
+    },
+    "plugins": ["expo-router"]
   }
 }
