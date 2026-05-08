@@ -2,6 +2,7 @@ import { HomeHeader, HomeHeaderProps } from "@/components/HomeHeader";
 import { View } from "react-native";
 import { Target } from "@/components/Target";
 import { List } from "@/components/List";
+import { Button } from "@/components/Button";
 
 const summary: HomeHeaderProps = {
   total: "R$ 2,680.00",
@@ -45,6 +46,9 @@ export default function Index() {
         renderItem={({ item }) => <Target data={item} />}
         containerStyle={{ paddingHorizontal: 24 }}
       />
+      <View style={{ padding: 24, paddingBottom: 32 }}>
+        <Button title="Nova meta" />
+      </View>
     </View>
   );
 }
