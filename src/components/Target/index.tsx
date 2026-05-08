@@ -14,9 +14,9 @@ export type TargetProps = {
   percentage: string;
   current: string;
   target: string;
-} & TouchableOpacityProps;
+};
 
-type Props = {
+type Props = TouchableOpacityProps & {
   data: TargetProps;
 };
 
