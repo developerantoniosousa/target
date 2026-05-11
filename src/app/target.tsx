@@ -84,11 +84,48 @@ export default function Target() {
     }
   }
 
+  async function remove() {
+    try {
+      await targetDatabase.remove(Number(params.id));
+      Alert.alert("Meta", "Meta removida!", [
+        {
+          text: "OK",
+          onPress: () => router.replace("/"),
+        },
+      ]);
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Erro", "Não foi possível remover a meta.");
+    }
+  }
+
+  function handleDelete() {
+    if (!params.id) return;
+    Alert.alert("Remover", "Deseja realmente remover?", [
+      {
+        text: "Sim",
+        onPress: remove,
+      },
+      {
+        text: "Cancelar",
+        style: "cancel",
+      },
+    ]);
+  }
+
   return (
     <View style={{ flex: 1, padding: 24 }}>
       <PageHeader
         title="Meta"
         subtitle="Economize para alcançar sua meta financeira."
+        rightButton={
+          params.id
+            ? {
+                icon: "delete",
+                onPress: handleDelete,
+              }
+            : undefined
+        }
       />
       <View style={{ marginTop: 32, gap: 24 }}>
         <Input
