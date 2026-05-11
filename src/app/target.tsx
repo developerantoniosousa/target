@@ -1,5 +1,5 @@
 import { Alert, View } from "react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
 
 import { Button } from "@/components/Button";
@@ -15,6 +15,23 @@ export default function Target() {
   const params = useLocalSearchParams<{ id?: string }>();
   const targetDatabase = useTargetDatabase();
 
+  async function fetchTarget() {
+    try {
+      const response = await targetDatabase.show(Number(params.id));
+      if (response !== null) {
+        setName(response.name);
+        setAmount(response.amount);
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Erro", "Não foi possível carregar a meta.");
+    }
+  }
+
+  useEffect(() => {
+    if (!!params.id) fetchTarget();
+  }, [params.id]);
+
   function handleSave() {
     if (!name.trim() || amount! <= 0) {
       Alert.alert(
@@ -25,11 +42,7 @@ export default function Target() {
     }
     setIsProcessing(true);
 
-    if (params.id) {
-      // update
-    } else {
-      create();
-    }
+    params.id ? update() : create();
   }
 
   async function create() {
@@ -51,6 +64,26 @@ export default function Target() {
     }
   }
 
+  async function update() {
+    try {
+      await targetDatabase.update({
+        name,
+        amount: amount!,
+        id: Number(params.id),
+      });
+      Alert.alert("Sucesso!", "Meta atualizada com sucesso!", [
+        {
+          text: "OK",
+          onPress: () => router.back(),
+        },
+      ]);
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível atualizar a meta.");
+      console.error(error);
+      setIsProcessing(false);
+    }
+  }
+
   return (
     <View style={{ flex: 1, padding: 24 }}>
       <PageHeader
@@ -61,6 +94,7 @@ export default function Target() {
         <Input
           label="Nome da meta"
           placeholder="Ex: Viagem para praia, Apple Watch"
+          value={name}
           onChangeText={setName}
         />
         <CurrencyInput
