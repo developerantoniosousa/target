@@ -12,7 +12,7 @@ export async function migrate(database: SQLiteDatabase) {
       updated_at TIMESTAMP NOT NULL DEFAULT current_timestamp
     );
 
-    CREATE TABLE IF NOT EXISTS transations (
+    CREATE TABLE IF NOT EXISTS transactions (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       target_id INTEGER NOT NULL,
       amount FLOAT NOT NULL,
