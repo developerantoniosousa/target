@@ -10,17 +10,20 @@ import { useTargetDatabase } from "@/database/useTargetDatabase";
 import { Loading } from "@/components/Loading";
 
 import { numberToCurrency } from "@/utils/numberToCurrency";
+import { useTransactionDatabase } from "@/database/useTransactionDatabase";
 
-const summary: HomeHeaderProps = {
-  total: "R$ 2,680.00",
-  input: { label: "Entradas", value: "R$ 6,184.90" },
-  output: { label: "Saídas", value: "-R$ 883.65" },
+const INITIAL_SUMMARY: HomeHeaderProps = {
+  total: "R$ 0,00",
+  input: { label: "Entradas", value: "R$ 0,00" },
+  output: { label: "Saídas", value: "R$ 0,00" },
 };
 
 export default function Index() {
   const targetDatabase = useTargetDatabase();
+  const transactionDatabase = useTransactionDatabase();
   const [isFetching, setIsFetching] = useState(true);
   const [targets, setTargets] = useState<TargetProps[]>([]);
+  const [summary, setSummary] = useState<HomeHeaderProps>(INITIAL_SUMMARY);
 
   async function fetchTargets(): Promise<TargetProps[]> {
     try {
@@ -39,10 +42,32 @@ export default function Index() {
     }
   }
 
+  async function fetchSummary(): Promise<HomeHeaderProps> {
+    try {
+      const response = await transactionDatabase.summary();
+      if (response !== null) {
+        return {
+          total: numberToCurrency(response.input - response.output),
+          input: { label: "Entradas", value: numberToCurrency(response.input) },
+          output: { label: "Saídas", value: numberToCurrency(response.output) },
+        };
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Erro", "Não foi possível carregar o resumo.");
+    }
+    return INITIAL_SUMMARY;
+  }
+
   async function fetchData() {
     const targetDataPromise = fetchTargets();
-    const [targetData] = await Promise.all([targetDataPromise]);
+    const summaryDataPromise = fetchSummary();
+    const [targetData, summaryData] = await Promise.all([
+      targetDataPromise,
+      summaryDataPromise,
+    ]);
     setTargets(targetData);
+    setSummary(summaryData);
     setIsFetching(false);
   }
 
