@@ -6,13 +6,12 @@ import { List } from "@/components/List";
 import { PageHeader } from "@/components/PageHeader";
 import { Progress } from "@/components/Progress";
 import { Transaction, TransactionProps } from "@/components/Transaction";
-import { TransactionTypes } from "@/utils/TransactionTypes";
 import { Button } from "@/components/Button";
 import { Loading } from "@/components/Loading";
-
 import { useTargetDatabase } from "@/database/useTargetDatabase";
 import { useTransactionDatabase } from "@/database/useTransactionDatabase";
 import { numberToCurrency } from "@/utils/numberToCurrency";
+import { TransactionTypes } from "@/utils/TransactionTypes";
 
 export default function InProgress() {
   const [isFetching, setIsFetching] = useState(true);
@@ -75,10 +74,32 @@ export default function InProgress() {
     setIsFetching(false);
   }
 
+  function handleTransactionRemove(id: string) {
+    Alert.alert("Transação", "Deseja realmente remover?", [
+      {
+        text: "Sim",
+        onPress: () => removeTransaction(id),
+      },
+      {
+        text: "Não",
+        style: "cancel",
+      },
+    ]);
+  }
+
+  async function removeTransaction(id: string) {
+    try {
+      await transactionDatabase.remove(Number(id));
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Erro", "Falha ao remover a transação.");
+    }
+  }
+
   useFocusEffect(
     useCallback(() => {
       fetchData();
-    }, []),
+    }, [transactions]),
   );
 
   if (isFetching) return <Loading />;
@@ -97,7 +118,10 @@ export default function InProgress() {
         title="Transações"
         data={transactions}
         renderItem={({ item }) => (
-          <Transaction data={item} onRemove={() => {}} />
+          <Transaction
+            data={item}
+            onRemove={() => handleTransactionRemove(item.id)}
+          />
         )}
         emptyMessage="Nenhuma transação. Toque em nova transação para guardar seu primeiro dinheiro aqui."
       />
