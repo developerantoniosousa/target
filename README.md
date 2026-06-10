@@ -11,6 +11,13 @@ A React Native app built with Expo and Expo Router to help users create, track, 
 - Use local persistence with SQLite via Expo
 - Clean mobile-first UI with reusable components and currency formatting
 
+## Preview
+
+<div align="center">
+  <img src=".github/images/home.jpg" alt="Home Screen" width="300" />
+  <img src=".github/images/target_track.jpg" alt="Target Tracking" width="300" />
+</div>
+
 ## Project structure
 
 - `src/app` - Expo Router screens and navigation
